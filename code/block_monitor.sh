@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Before runing this script, you should install sysstat and bc, the commands are as following:
+# sudo apt-get install sysstat
+# sudo apt-get install bc
 # Function to print horizontal line
 print_separator() {
     echo "--------------------------------------------------"

@@ -23,4 +23,7 @@ git clone https://github.com/JingHan0724/MP.git
 cd MP
 chmod +x install_source.sh
 ./install_source.sh -s username@desktopipaddress
+# Collecting data:
+cd MP/controller
+source env/bin/activate
 python3 cli.py collect

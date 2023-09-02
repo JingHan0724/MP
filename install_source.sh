@@ -63,3 +63,14 @@ cd ..
 cd SYS
 chmod +x SYS.sh
 echo "Depencencies installed"
+
+# Installs the python-venv for the for the middleware:
+echo "Installing the dependencies for the Monitor Controller"
+cd ../../
+cd controller
+python3 -m venv env
+source env/bin/activate
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org tabulate requests click python-dotenv
+deactivate
+echo "Depencencies installed"
+echo "Done, you can start Monitoring"

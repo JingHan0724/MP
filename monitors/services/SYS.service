@@ -1,0 +1,13 @@
+[Unit]
+Description=System Call Monitor (SYS)
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=root
+EnvironmentFile=/etc/systemd/system/SYS.env
+ExecStart=/bin/bash /root/MP/monitors/SYS/SYS.sh -d $RSYNCF -i $TMPF -t $SECONDS
+
+[Install]
+WantedBy=multi-user.target

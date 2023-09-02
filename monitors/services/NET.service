@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitors events coming from the network (NET)
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=root
+ExecStart=/bin/bash -c 'cd /root/MP/monitors/NET/ && source env/bin/activate && python3 network_monitor_raw.py && python3 data_process.py'
+
+[Install]
+WantedBy=multi-user.target

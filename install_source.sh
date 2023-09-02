@@ -38,6 +38,12 @@ echo "perf was installed"
 apt install python3-venv -y
 echo "Installed python-venv"
 
+cd monitors/services
+cp RES.service KERN.service SYS.service SYS.env NET.service /etc/systemd/system/
+systemctl daemon-reload
+echo "Services copied to /etc/systemd/system/"
+echo "Services reloaded"
+
 # RES Monitor
 echo "Installing dependencies for the RES Monitor"
 cd ..

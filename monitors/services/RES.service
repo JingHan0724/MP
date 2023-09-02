@@ -1,0 +1,12 @@
+[Unit]
+Description=Thesis monitor HPC & Ressources (RES)
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=root
+ExecStart=/bin/bash -c 'cd /root/MP/monitors/RES/source/ && source env/bin/activate && python3 main.py'
+
+[Install]
+WantedBy=multi-user.target

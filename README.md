@@ -18,21 +18,13 @@ You will need to enable SSH on your main machine:
 # Malware samples:
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:
-<<<<<<< HEAD
-apt-get git
-git clone https://github.com/JingHan0724/MP.git
-cd MP
-chmod +x install_source.sh
-./install_source.sh -s username@desktopipaddress
-# Collecting data:
-cd MP/controller
-source env/bin/activate
-python3 cli.py collect
-=======
 * apt-get git
 * git clone https://github.com/JingHan0724/MP.git
 * cd MP
 * chmod +x install_source.sh
 * ./install_source.sh -s username@desktopipaddress
-* python3 cli.py collect
->>>>>>> 1c18f36595d86e7c44cdc60e4dd63251d862363b
+# Collecting data:
+* cd MP/controller
+* source env/bin/activate
+* python3 collect.py
+

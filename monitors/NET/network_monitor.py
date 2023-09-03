@@ -18,9 +18,9 @@ def capture_and_save_csv(networkInterface, output_csv_file):
         sniff(iface=networkInterface, prn=lambda packet: packet_handler(packet, captured_packets), timeout=5)
 
         # Save CSV file with a timestamp in the filename
-        csv_file = f'{output_csv_file}_{current_timestamp}.csv'
+        csv_file = '{}_{}.csv'.format(output_csv_file, current_timestamp)
         render_csv_from_pcap(captured_packets, csv_file)
-        print(f"Data saved to {csv_file}")
+        print("Data saved to {}".format(csv_file))
 
 
 def render_csv_row(packet, fh_csv):

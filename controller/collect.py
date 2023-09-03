@@ -121,7 +121,7 @@ def start_monitor(seconds: int, active_services: array, server: str):
         print("Error: Could not start all services!")
         return error
     start = time.perf_counter()
-    while total < seconds:
+    while total < int(seconds):
         time.sleep(1)
         if total % 10 == 0 and total != 0:
             t1 = threading.Thread(target=thread_work, args=(server, active_services, total))
@@ -142,9 +142,7 @@ def replace_env(server: str ,seconds: int):
     Changes the environmental variables in SYS.env and 
     reloads the systemd service.
     """
-    print(server)
     dotenv_file = dotenv.find_dotenv()
-    print(dotenv_file)
     dotenv.load_dotenv(dotenv_file)
     os.environ["RSYNCF"] = "{}/SYS".format(server)
     os.environ["SECONDS"] = "{}\seconds".format(str(seconds))
@@ -181,7 +179,6 @@ def create_directories_server(mltype: str, monitors: array, server:str):
     path = "{server_path}/{mltype}".format(server_path=server_path, mltype=mltype)
     
     for monitor in monitors:
-        print(monitor)
         os.system("ssh {server_ssh} mkdir -p {path}/{monitor}".format(server_ssh=server_ssh, path=path, monitor=monitor))
     new_path = server_ssh + ":" + path
     return new_path
@@ -192,7 +189,7 @@ def send_delete(server, monitor):
     Sends contents of the directory via rsync to the server and deletes all files in the directory
     """
     print("Sending data to server  for monitor {}...".format(monitor))
-    os.system("rsync -vr /tmp/monitors/{monitor}/ {server}/{directory} > /dev/null".format(server=server, directory=monitor))
+    os.system("rsync -vr /tmp/monitors/{directory}/ {server}/{directory} > /dev/null".format(server=server, directory=monitor))
     print("Data sent to server and deleted from local directory")
     
 

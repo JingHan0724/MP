@@ -38,6 +38,10 @@ echo "perf was installed"
 apt install python3-venv -y
 echo "Installed python-venv"
 
+# Installs tshark
+apt install tshark -y
+echo "Installed tshark"
+
 cd monitors/services
 cp RES.service KERN.service SYS.service SYS.env NET.service /etc/systemd/system/
 systemctl daemon-reload
@@ -63,6 +67,18 @@ cd ..
 cd SYS
 chmod +x SYS.sh
 echo "Depencencies installed"
+
+
+# NET Monitor
+echo "Installing dependencies for the NET Monitor"
+cd ..
+cd NET
+python3 -m venv env
+source env/bin/activate
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r scapy cryptography
+deactivate
+echo "Depencencies installed"
+
 
 # Installs the python-venv for the for the middleware:
 echo "Installing the dependencies for the Monitor Controller"

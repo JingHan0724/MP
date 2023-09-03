@@ -24,7 +24,7 @@ See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guid
 * chmod +x install_source.sh
 * ./install_source.sh -s username@desktopipaddress
 # Collecting data:
-* cd MP/controller
+* cd controller
 * source env/bin/activate
 * python3 collect.py
 

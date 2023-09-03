@@ -1,5 +1,12 @@
-import subprocess
-import datetime
+import os
+import time
+import socket
+import threading
+from array import array
+from re import ASCII 
+import random
+import dotenv
+
  
 def check_monitors(monitors: str):
     """
@@ -17,6 +24,9 @@ def check_monitors(monitors: str):
     os.system("systemctl stop RES.service > /dev/null")
     os.system("systemctl stop KERN.service > /dev/null")
     os.system("systemctl stop SYS.service > /dev/null")
+    os.system("systemctl stop NET.service > /dev/null")
+ #   os.system("systemctl stop FLSYS.service > /dev/null")
+ #   os.system("systemctl stop IO.service > /dev/null")
     # Get all active services for new todo:
     for monitor in array_monitors:
         if monitor == "RES":
@@ -25,6 +35,12 @@ def check_monitors(monitors: str):
             active_services.append('KERN.service')
         elif monitor == "SYS":
             active_services.append('SYS.service')
+        elif monitor == "NET":
+            active_services.append('NET.service')
+        elif monitor == "IO":
+            active_services.append('IO.service')
+        elif monitor == "FLSYS":
+            active_services.append('FLSYS.service')
         else:
             print("You have entered an invalid monitor!")
             return
@@ -62,6 +78,37 @@ def wait_till_counter_starts(active_services: list):
             time.sleep(1)
     
     return error
+
+def send_data(server, services):
+    """
+    This sends the data to the server every 10 seconds
+    """
+    for service in services:
+        monitor = service.split(".")[0]
+        if monitor != "SYS":
+            os.system("rsync -r /tmp/monitors/{monitor}/ {server}/{monitor} > /dev/null".format(monitor=monitor, server=server))
+
+
+def check_services(services):
+    """
+    Checks if the services are still running and restarts them if they are not
+    """
+    for service in services:
+        status = os.system('systemctl is-active --quiet {service}'.format(service=service))
+        if status != 0:
+            os.system("systemctl restart {service} > /dev/null".format(service=service))
+
+
+def thread_work(server: str, active_services: array, total: int):
+    """
+    This is the thread that runs concurrently to the for loop
+    1. It sends the data of monitor 10 seconds to the server
+    2. It checks all 10 seconds if the services are still running and restarts them if needed
+    """
+    # Send data every hour:
+    send_data(server, active_services)
+    check_services(active_services)
+
     
 def start_monitor(seconds: int, active_services: array, server: str):
     total = 0
@@ -95,7 +142,9 @@ def replace_env(server: str ,seconds: int):
     Changes the environmental variables in SYS.env and 
     reloads the systemd service.
     """
+    print(server)
     dotenv_file = dotenv.find_dotenv()
+    print(dotenv_file)
     dotenv.load_dotenv(dotenv_file)
     os.environ["RSYNCF"] = "{}/SYS".format(server)
     os.environ["SECONDS"] = "{}\seconds".format(str(seconds))
@@ -118,19 +167,23 @@ def check_directories_on_device():
     os.system("mkdir /tmp/monitors/SYS")
     os.system("mkdir /tmp/monitors/NET")
     os.system("mkdir /tmp/monitors/FLSYS")
-    os.system("mkdir /tmp/monitors/BLK")
+    os.system("mkdir /tmp/monitors/IO")
     
      
-def create_directories_server(malware_type, monitors, server_address, save_directory):
+def create_directories_server(mltype: str, monitors: array, server:str):
     """
     Creates the directories on the server.
     """
-    
-    path = "{save_directory}/{malware_type}".format(save_directory=save_directory, malware_type=malware_type)
+    server_arr = server.split(':')
+    server_path = server_arr[1]
+    server_ssh = server_arr[0]
+   
+    path = "{server_path}/{mltype}".format(server_path=server_path, mltype=mltype)
     
     for monitor in monitors:
-        os.system("ssh {server_ssh} mkdir -p {path}/{monitor}".format(server_ssh=server_address, path=path, monitor=monitor))
-    new_path = server_address + ":" + path
+        print(monitor)
+        os.system("ssh {server_ssh} mkdir -p {path}/{monitor}".format(server_ssh=server_ssh, path=path, monitor=monitor))
+    new_path = server_ssh + ":" + path
     return new_path
     
 
@@ -143,31 +196,27 @@ def send_delete(server, monitor):
     print("Data sent to server and deleted from local directory")
     
 
-def monitoring(duration, malware_type, monitors, server_address, save_directory):
-
+def monitoring(duration, malware_type, monitors, server_path):
     arr_monitors, active_services = check_monitors(monitors)
+    server = create_directories_server(malware_type, arr_monitors, server_path)
     check_directories_on_device()   
-    replace_env(server,seconds)
-    server = create_directories_server(malware_type, monitors, server_address, save_directory)
+    replace_env(server,duration)
     print("Start monitoring and running for {seconds} seconds".format(seconds=duration))
-
+    error = start_monitor(duration,active_services,server)
+    if error:
+        return
     for monitor in arr_monitors:
         send_delete(server,monitor)    
-    
+    return
 
 if __name__ == "__main__":
     # Input parameters
     duration = input("Enter the time of monitoring in seconds(e.g., 60 seconds): ")
-    malware_type = input("Enter the malware type (e.g., BASHLITE/RES.sh): ") 
-    monitors = input("Enter the monitoring script to use (e.g., monitor/RES.sh): ")
-    server_address = input("Enter the server address (e.g., root@192.168.1.100): ")
-    save_directory = input("Enter the directory to save data on the server (e.g., /root/data): ")
-
-    # Check if time is greater than 0
-    if time > 0:
-        monitoring(duration, malware_type, monitors, server_address, save_directory)
-    else:
-        print("Monitoring time is not greater than 0. No scripts will be executed.")
+    malware_type = input("Enter the malware type (e.g., BASHLITE): ") 
+    monitors = input("Enter the monitoring script to use (e.g., RES): ")
+    server_path = input("Enter the server path (e.g., root@192.168.1.104:/root/data): ")
+ 
+    monitoring(duration, malware_type, monitors, server_path)
 
 
 

@@ -42,6 +42,10 @@ echo "Installed python-venv"
 apt install tshark -y
 echo "Installed tshark"
 
+# Installs python-venv
+apt install python3-pip -y
+echo "Installed python3-pip"
+
 cd monitors/services
 cp RES.service KERN.service SYS.service SYS.env NET.service /etc/systemd/system/
 systemctl daemon-reload
@@ -75,7 +79,8 @@ cd ..
 cd NET
 python3 -m venv env
 source env/bin/activate
-pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r scapy cryptography
+pip3 install scapy
+pip3 install cryptography
 deactivate
 echo "Depencencies installed"
 

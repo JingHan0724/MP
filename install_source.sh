@@ -72,7 +72,6 @@ cd SYS
 chmod +x SYS.sh
 echo "Depencencies installed"
 
-
 # NET Monitor
 echo "Installing dependencies for the NET Monitor"
 cd ..
@@ -84,6 +83,14 @@ pip3 install cryptography
 deactivate
 echo "Depencencies installed"
 
+# IO Monitor
+echo "Installing dependencies for the IO Monitor"
+cd ..
+cd IO
+sudo apt-get install sysstat
+sudo apt-get install bc
+chmod +x block_monitor.sh
+echo "Depencencies installed"
 
 # Installs the python-venv for the for the middleware:
 echo "Installing the dependencies for the Monitor Controller"

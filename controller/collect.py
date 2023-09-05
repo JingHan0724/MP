@@ -26,7 +26,7 @@ def check_monitors(monitors: str):
     os.system("systemctl stop SYS.service > /dev/null")
     os.system("systemctl stop NET.service > /dev/null")
  #   os.system("systemctl stop FLSYS.service > /dev/null")
- #   os.system("systemctl stop IO.service > /dev/null")
+    os.system("systemctl stop IO.service > /dev/null")
     # Get all active services for new todo:
     for monitor in array_monitors:
         if monitor == "RES":

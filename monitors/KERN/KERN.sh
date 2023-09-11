@@ -1,7 +1,7 @@
 #!/bin/bash -u
 
 ##############################################################
-#############		SCRIPT CONFIGURATION		##############
+#############	    SCRIPT CONFIGURATION        ##############
 ##############################################################
 # Set language to make sure same separator (, and .) config is being used
 export LC_ALL=C.UTF-8
@@ -15,7 +15,7 @@ timeWindowSeconds=5
 timeAcumulative=0
 
 ##############################################################
-#############		   MONITORING LOOP			##############
+#############	      MONITORING LOOP	        ##############
 ##############################################################
 echo "Started monitoring script. . ."
 
@@ -24,7 +24,7 @@ header=$(echo "$targetEvents" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | tr '\n' ',' 
 while :
 do
 	##############################################################
-	#############		   DATA COLLECTION			##############
+	#############		 DATA COLLECTION	##############
 	##############################################################
 	#	Internet connection check via ping
 	if ping -q -c 1 -W 1.5 8.8.8.8 >/dev/null; then
@@ -45,7 +45,7 @@ do
 	timeAcumulative=$(awk "BEGIN{ print $timeAcumulative + $seconds }")
 		
 	##############################################################
-	#############			   OUTPUT				##############
+	#############	           OUTPUT	        ##############
 	##############################################################
 	
 	# Send to server

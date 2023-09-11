@@ -1,6 +1,9 @@
 from scapy.all import *
 import os
 import time
+import requests
+
+server_url = "https://192.168.1.104:5002/sensor/network"
 
 
 def packet_handler(packet, captured_packets):
@@ -40,9 +43,23 @@ def render_csv_row(packet, fh_csv):
         packet_time = packet.time
         packet_length = len(packet)
 
-        csv_data = [packet_time, protocol, source_address, source_port, destination_address, destination_port,
-                    packet_length]
-        fh_csv.write(','.join(str(value) for value in csv_data) + '\n')
+        csv_data = "{},{},{},{},{},{},{}".format(
+            packet_time, protocol, source_address, source_port, destination_address, destination_port, packet_length
+        )
+        fh_csv.write(csv_data + '\n')
+        # push to server
+        data_to_send = csv_data
+        try:
+            # Send the data as a string in the desired format
+            response = requests.post(server_url, data=data_to_send, verify=False)
+
+            # Check the response status code to ensure the data was sent successfully
+            if response.status_code == 200:
+                print("Data sent successfully.")
+            else:
+                print("Error: {} - {}".format(response.status_code, response.text))
+        except Exception as e:
+            print("Error: {}".format(str(e)))
 
 
 def render_csv_from_pcap(captured_packets, output_csv_file):
@@ -65,6 +82,9 @@ def render_csv_from_pcap(captured_packets, output_csv_file):
 def main():
     networkInterface = "eth0"
     output_csv_file = '/tmp/monitors/NET/net'
+
+#    networkInterface = "enp3s0"
+#    output_csv_file = '/home/roger/Desktop/master_project/server/net'
 
     capture_and_save_csv(networkInterface, output_csv_file)
 

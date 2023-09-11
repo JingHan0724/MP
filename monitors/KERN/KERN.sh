@@ -24,7 +24,7 @@ header=$(echo "$targetEvents" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | tr '\n' ',' 
 while :
 do
 	##############################################################
-	#############		 DATA COLLECTION	##############
+	#############		 DATA COLLECTION	        ##############
 	##############################################################
 	#	Internet connection check via ping
 	if ping -q -c 1 -W 1.5 8.8.8.8 >/dev/null; then
@@ -35,7 +35,7 @@ do
 	timestamp=$(($(date +%s%N)/1000000))
 	
 	# Perf will monitor the events and also act as a "sleep" between both network captures
-        tempOutput=$(perf stat --log-fd 1 -e "$targetEvents" -a sleep "$timeWindowSeconds")
+    tempOutput=$(perf stat --log-fd 1 -e "$targetEvents" -a sleep "$timeWindowSeconds")
 
 	# Data extraction from perf results
 	sample=$(echo "$tempOutput" | cut -c -20 | tr -s " " | tail -n +4 | head -n -2 | tr "\n" "," | sed 's/ //g'| sed 's/.$//')
@@ -45,23 +45,23 @@ do
 	timeAcumulative=$(awk "BEGIN{ print $timeAcumulative + $seconds }")
 		
 	##############################################################
-	#############	           OUTPUT	        ##############
+	#############	           OUTPUT	            ##############
 	##############################################################
 	
 	# Send to server
-        server_path = "$SERVER_PATH"
+    server_path = "$SERVER_PATH"
         
 	# Check if the header exists
-        if [[ ! -f header_added.txt ]]; then
+    if [[ ! -f header_added.txt ]]; then
 	    kern_file="/$server_path/kern_data.csv"
 	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
 	        ssh "$server_path" 'cat > $kern_file'
-            touch header_added.txt
+        touch header_added.txt
 	fi
 
 	kern_file="/$server_path/kern_data.csv"
  
 	# Append data in the csv file
-        echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
-            ssh "$server_path" 'cat >> $kern_file'
+    echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
+        ssh "$server_path" 'cat >> $kern_file'
 done

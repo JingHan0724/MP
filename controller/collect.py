@@ -212,8 +212,6 @@ if __name__ == "__main__":
     malware_type = input("Enter the malware type (e.g., BASHLITE): ") 
     monitors = input("Enter the monitoring script to use (e.g., RES): ")
     server_path = input("Enter the server path (e.g., root@192.168.1.104:/root/data): ")
-
-    os.environ["SERVER_PATH"] = server_path
  
     monitoring(duration, malware_type, monitors, server_path)
 

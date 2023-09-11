@@ -49,14 +49,19 @@ do
 	##############################################################
 	
 	# Send to server
-        # Check if the header exists
-        if [[ ! -f header_added.txt ]]; then
-	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
-	        ssh xicheng@192.168.8.11 'cat > /Users/xicheng/Desktop/data/KERN/remote_data.csv '
-        touch header_added.txt
-	fi
+        server_path = "$SERVER_PATH"
         
+	# Check if the header exists
+        if [[ ! -f header_added.txt ]]; then
+	    kern_file="/$server_path/kern_data.csv"
+	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
+	        ssh "$server_path" 'cat > $kern_file'
+            touch header_added.txt
+	fi
+
+	kern_file="/$server_path/kern_data.csv"
+ 
 	# Append data in the csv file
         echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
-            ssh xicheng@192.168.8.11 'cat >> /Users/xicheng/Desktop/data/KERN/remote_data.csv '
+            ssh "$server_path" 'cat >> $kern_file'
 done

@@ -14,12 +14,20 @@ timeWindowSeconds=5
 # Total time monitored (NOT TAKING IN CONSIDERATION TIME BETWEEN SCREENSHOTS)
 timeAcumulative=0
 
+server_username="xicheng"
+server_host="192.168.8.11"
+server_path="/Users/xicheng/Desktop/data"
+
 ##############################################################
 #############	      MONITORING LOOP	        ##############
 ##############################################################
 echo "Started monitoring script. . ."
 
 header=$(echo "$targetEvents" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | tr '\n' ',' | sed 's/,$//')
+
+if [ -f header_added.txt ]; then
+    rm header_added.txt
+fi
 
 while :
 do
@@ -39,7 +47,7 @@ do
 
 	# Data extraction from perf results
 	sample=$(echo "$tempOutput" | cut -c -20 | tr -s " " | tail -n +4 | head -n -2 | tr "\n" "," | sed 's/ //g'| sed 's/.$//')
-	seconds=$(echo "$tempOutput" | tr -s " " | cut -d " " -f 2 | tail -n 2 | tr ',' '.')
+	seconds=$(echo "$tempOutput" | tr -s " " | cut -d " " -f 2 | tail -n 1 | tr ',' '.')
 
 	# Cumulative sum of seconds calculation
 	timeAcumulative=$(awk "BEGIN{ print $timeAcumulative + $seconds }")
@@ -48,20 +56,18 @@ do
 	#############	           OUTPUT	            ##############
 	##############################################################
 	
-	# Send to server
-    server_path = "$SERVER_PATH"
-        
+	# Send to server  
 	# Check if the header exists
     if [[ ! -f header_added.txt ]]; then
-	    kern_file="/$server_path/kern_data.csv"
+	    kern_file="$server_path/kern_data.csv"
 	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
-	        ssh "$server_path" 'cat > $kern_file'
+	        ssh "$server_username@$server_host" "cat > \"$kern_file\""
         touch header_added.txt
 	fi
 
-	kern_file="/$server_path/kern_data.csv"
+	kern_file="$server_path/kern_data.csv"
  
 	# Append data in the csv file
     echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
-        ssh "$server_path" 'cat >> $kern_file'
+        ssh "$server_username@$server_host" "cat >> \"$kern_file\""
 done

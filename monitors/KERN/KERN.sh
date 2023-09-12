@@ -59,13 +59,11 @@ do
 	# Send to server  
 	# Check if the header exists
     if [[ ! -f header_added.txt ]]; then
-	    kern_file="$server_path/kern_data.csv"
+	    kern_file="$server_path/kern_$timestamp.csv"
 	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
 	        ssh "$server_username@$server_host" "cat > \"$kern_file\""
         touch header_added.txt
 	fi
-
-	kern_file="$server_path/kern_data.csv"
  
 	# Append data in the csv file
     echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \

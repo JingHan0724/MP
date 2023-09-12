@@ -8,7 +8,7 @@ Creation of New Datasets for Decentralized Federated Learning
 * RES: Also monitors HPC & Ressource usage -> Provided by Dr.Huertas and Dr.Feng (5 seconds time window)
 * SYS: Monitors Systemcalls -> Provided by Dr.Huertas and Dr.Feng (10 seconds time window)
 * NET: Monitors events coming from the network (10 seconds time window)
-* IO: Monitors events coming from the input/output (*** seconds time window)
+* IO: Monitors events coming from the input/output (10 seconds time window)
 * FLSYS: Monitors events coming from the file system (*** seconds time window)
 # Prerequisite:
 You will need to enable SSH on your main machine:

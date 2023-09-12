@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Before runing this script, you should install sysstat and bc, the commands are as following:
-# sudo apt-get install sysstat
-# sudo apt-get install bc
-# Function to print horizontal line
-print_separator() {
-    echo "--------------------------------------------------"
-}
+# Default monitor interval (in seconds)
+monitor_interval=10
 
-# Check if the CSV file exists; if not, create it with headers
-if [[ ! -e "block_storage_metrics.csv" ]]; then
-    echo "Date and Time,Device,Read Ops/s,Write Ops/s,Avg Queue Length,Disk Utilization (%),IO Service Time ms,I/O Pattern" > block_storage_metrics.csv
-fi
+#Server and port to push data
+server="http://192.168.31.185"
+port="5002"
+directory="/sensor/"
+mac=$( cat /sys/class/net/eth0/address | tr : _ )
 
 # Main monitoring loop
 while true; do
@@ -19,29 +15,27 @@ while true; do
     current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
 
     # Display I/O statistics using iostat
-    iostat_output=$(iostat -d -x 1 2 | tail -n 1)
+    iostat_output=$(iostat -d -x 10 2 | grep '[0-9]' | tail -n 1) # the name of the block device
     device=$(echo "$iostat_output" | awk '{print $1}')
-    read_ops=$(echo "$iostat_output" | awk '{print $4}')
-    write_ops=$(echo "$iostat_output" | awk '{print $5}')
-    avg_queue=$(echo "$iostat_output" | awk '{print $9}')
-    io_service_time=$(echo "$iostat_output" | awk '{print $12}')
+    read_ops=$(echo "$iostat_output" | awk '{print $4}') # number of read I/O operations per second
+    write_ops=$(echo "$iostat_output" | awk '{print $5}') # number of write I/O operations per second
+    read_kbs=$(echo "$iostat_output" | awk '{print $6}') # kilobytes read per second
+    write_kbs=$(echo "$iostat_output" | awk '{print $7}') # kilobytes read per second
+    avgrq_sz=$(echo "$iostat_output" | awk '{print $8}') # average size (in sectors) of the requests sent to the device
+    avg_queue=$(echo "$iostat_output" | awk '{print $9}') # average queue length (number of requests waiting for service)
+    await=$(echo "$iostat_output" | awk '{print $10}') # average time (in milliseconds) for I/O requests to be serviced (including queue time)
+    r_await=$(echo "$iostat_output" | awk '{print $11}') #average time (in milliseconds) for read requests to be serviced
+    w_await=$(echo "$iostat_output" | awk '{print $12}') #average time (in milliseconds) for written requests to be serviced
+    svctm=$(echo "$iostat_output" | awk '{print $13}') #average service time (in milliseconds) for I/O requests
+    util=$(echo "$iostat_output" | awk '{print $14}') #percentage of time the device was busy servicing I/O requests.
 
     # Calculate disk utilization percentage
-    disk_utilization=$(df -h | grep "/dev/$device" | awk '{print $5}' | sed 's/%//')
-
-    # Detect I/O pattern (Rising, Falling, Stable)
-    io_pattern="Stable"
-    if [[ $read_ops -gt 0 && $write_ops -gt 0 ]]; then
-        io_pattern="Mixed"
-    elif [[ $read_ops -gt 0 ]]; then
-        io_pattern="Read-Heavy"
-    elif [[ $write_ops -gt 0 ]]; then
-        io_pattern="Write-Heavy"
-    fi
-
-    # Append the data to the CSV file
-    echo "$current_datetime,$device,$read_ops,$write_ops,$avg_queue,$disk_utilization,$io_service_time,$io_pattern" >> block_storage_metrics.csv
+    # disk_utilization=$(df -h | grep "/dev/$device" | awk '{print $5}' | sed 's/%//')
+	
+    #PUSH to server	
+    finalOutput="$current_datetime,$device,$read_ops,$write_ops,$read_kbs,$write_kbs,$avgrq_sz,$avg_queue,$await,$r_await,$w_await,$svctm,$util"
+    res=$(curl -sk -X POST -d "$finalOutput" -H "Content-Type: text/csv" "$server:$port$directory$mac")
 
     # Sleep for a while before the next iteration
-    sleep 5
+    #sleep $monitor_interval
 done

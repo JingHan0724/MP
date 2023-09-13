@@ -26,7 +26,8 @@ def check_monitors(monitors: str):
  #   os.system("systemctl stop SYS.service > /dev/null")
     os.system("systemctl stop NET.service > /dev/null")
  #   os.system("systemctl stop FLSYS.service > /dev/null")
- #   os.system("systemctl stop IO.service > /dev/null")
+    os.system("systemctl stop BLOCK.service > /dev/null")
+    os.system("systemctl stop ENTROPY.service > /dev/null")
     # Get all active services for new todo:
     for monitor in array_monitors:
         if monitor == "RES":
@@ -37,8 +38,10 @@ def check_monitors(monitors: str):
             active_services.append('SYS.service')
         elif monitor == "NET":
             active_services.append('NET.service')
-        elif monitor == "IO":
-            active_services.append('IO.service')
+        elif monitor == "BLOCK":
+            active_services.append('BLOCK.service')
+        elif monitor == "ENTROPY":
+            active_services.append('ENTROPY.service')
         elif monitor == "FLSYS":
             active_services.append('FLSYS.service')
         else:
@@ -70,7 +73,6 @@ def start_monitor(seconds: int, active_services: array):
     total = 0
     for service in active_services:
         os.system("systemctl start {service} > /dev/null".format(service=service))
-    # Wait to let all services properly start up:
     start = time.perf_counter()
     while total < int(seconds):
         time.sleep(1)
@@ -85,7 +87,7 @@ def start_monitor(seconds: int, active_services: array):
         os.system("systemctl stop {service} > /dev/null".format(service=service))
   
 
-def monitoring(duration, malware_type, monitors):
+def monitoring(duration, monitors):
     arr_monitors, active_services = check_monitors(monitors)
     print("Start monitoring and running for {seconds} seconds".format(seconds=duration))
     start_monitor(duration,active_services)
@@ -94,10 +96,9 @@ def monitoring(duration, malware_type, monitors):
 if __name__ == "__main__":
     # Input parameters
     duration = input("Enter the time of monitoring in seconds(e.g., 60 seconds): ")
-    malware_type = input("Enter the malware type (e.g., BASHLITE): ") 
     monitors = input("Enter the monitoring script to use (e.g., RES): ")
 
-    monitoring(duration, malware_type, monitors)
+    monitoring(duration, monitors)
 
 
 

@@ -1,13 +1,13 @@
 device:
-  newtork_interface: wlan0
+  newtork_interface: eth0
 general:
   csvEnabled: true
-  deviceId: electroSense_sensor_1
+  deviceId: electroSense_sensor_3
   deviceRndId: mwr9tt4
   logLevel: debug
   rabbitMQEnabled: false
 server:
-  url: http://192.168.8.11:8888/sensor/RES
+  url: http://192.168.1.100:5005/sensor/RES
 hw_events:
   cpu:
   - cpu

@@ -47,7 +47,7 @@ apt install python3-pip -y
 echo "Installed python3-pip"
 
 cd monitors/services
-cp RES.service KERN.service SYS.service SYS.env NET.service /etc/systemd/system/
+cp RES.service KERN.service SYS.service SYS.env NET.service BLOCK.service ENTROPY.service /etc/systemd/system/
 systemctl daemon-reload
 echo "Services copied to /etc/systemd/system/"
 echo "Services reloaded"
@@ -83,6 +83,14 @@ pip3 install scapy
 pip3 install cryptography
 pip3 install requests
 deactivate
+echo "Depencencies installed"
+
+# BLOCK Monitor and ENTROPY Monitor
+echo "Installing dependencies for the BLOCK and ENTROPY Monitor"
+cd ..
+cd IO
+chmod +x block_monitor.sh
+chmod +x calculate_entropy.sh
 echo "Depencencies installed"
 
 

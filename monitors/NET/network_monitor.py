@@ -3,31 +3,29 @@ import os
 import time
 import requests
 
-server_url = "https://192.168.1.104:5002/sensor/network"
+server_url = "https://192.168.1.100:5002/sensor/network"
 
-
+# Define a packet handler function to append packets to a list
 def packet_handler(packet, captured_packets):
     captured_packets.append(packet)
 
-
-def capture_and_save_csv(networkInterface, output_csv_file):
+# Function to capture and save network packets
+def capture_and_save(networkInterface):
     while True:
-        current_timestamp = int(time.time())  # Generate a timestamp for the filenames
- #       print(f"Listening on {networkInterface}...")
+        current_timestamp = int(time.time())
 
         captured_packets = []
 
         # Capture network traffic for 5 seconds
         sniff(iface=networkInterface, prn=lambda packet: packet_handler(packet, captured_packets), timeout=5)
 
-        # Save CSV file with a timestamp in the filename
-        csv_file = '{}_{}.csv'.format(output_csv_file, current_timestamp)
-        render_csv_from_pcap(captured_packets, csv_file)
-        print("Data saved to {}".format(csv_file))
+        # Call render_content_from_pcap to process and send captured packets
+        render_content_from_pcap(captured_packets)
 
-
-def render_csv_row(packet, fh_csv):
+# Function to process and send captured packets
+def render_row(packet):
     if IP in packet and (TCP in packet or UDP in packet):
+        # Extract packet information
         source_address = packet[IP].src
         destination_address = packet[IP].dst
 
@@ -43,14 +41,12 @@ def render_csv_row(packet, fh_csv):
         packet_time = packet.time
         packet_length = len(packet)
 
-        csv_data = "{},{},{},{},{},{},{}".format(
+        data_to_send = "{},{},{},{},{},{},{}".format(
             packet_time, protocol, source_address, source_port, destination_address, destination_port, packet_length
         )
-        fh_csv.write(csv_data + '\n')
-        # push to server
-        data_to_send = csv_data
+
         try:
-            # Send the data as a string in the desired format
+            # Send the data to the server over HTTPS
             response = requests.post(server_url, data=data_to_send, verify=False)
 
             # Check the response status code to ensure the data was sent successfully
@@ -61,33 +57,23 @@ def render_csv_row(packet, fh_csv):
         except Exception as e:
             print("Error: {}".format(str(e)))
 
-
-def render_csv_from_pcap(captured_packets, output_csv_file):
+# Function to process captured packets
+def render_content_from_pcap(captured_packets):
     frame_num = 0
     ignored_packets = 0
 
-    with open(output_csv_file, 'w') as fh_csv:
-        csv_header = "Time,Protocol,SourceIP,SourcePort,DestIP,DestPort,Length"
-        fh_csv.write(csv_header + "\n")
-        for packet in captured_packets:
-            frame_num += 1
-            try:
-                render_csv_row(packet, fh_csv)
-            except AttributeError:
-                ignored_packets += 1
+    for packet in captured_packets:
+        frame_num += 1
+        try:
+            render_row(packet)
+        except AttributeError:
+            ignored_packets += 1
 
-#    print('{} packets read, {} packets not written to CSV'.format(frame_num, ignored_packets))
-
-
+# Main function
 def main():
-    networkInterface = "eth0"
-    output_csv_file = '/tmp/monitors/NET/net'
-
-#    networkInterface = "enp3s0"
-#    output_csv_file = '/home/roger/Desktop/master_project/server/net'
-
-    capture_and_save_csv(networkInterface, output_csv_file)
-
+    networkInterface = "eth0"  # Network interface to capture packets from
+    capture_and_save(networkInterface)
 
 if __name__ == "__main__":
     main()
+

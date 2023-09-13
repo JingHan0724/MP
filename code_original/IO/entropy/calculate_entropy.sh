@@ -2,12 +2,18 @@
 
 monitor_interval=10 # Set the monitor interval in seconds
 
+cleanup(){
+    rm -f lsof_info.txt
+    exit 0
+}
+
+trap cleanup SIGINT
+
 #Server and port to push data
 server="http://192.168.31.185"
 port="5002"
 directory="/sensor/"
 mac=$( cat /sys/class/net/eth0/address | tr : _ )
-
 
 caculate_entropy(){
 entropy=$(${pythoncmd} <<EOF
@@ -38,12 +44,13 @@ monitor_write_file(){
       #PUSH to server	
       finalOutput="entropy: $(echo ${entropy}|awk  '{printf "%.6f\n", $0}') | filePath: [ ${file_path} ]"
       res=$(curl -sk -X POST -d "$finalOutput" -H "Content-Type: application/json" "$server:$port$directory$mac")
-    done	
+    done
+    rm -rf ${lsof_file}    
     sleep "${monitor_interval}"
   done
 }
 
 ScriptDir=$(cd `dirname $0`; pwd)
 pythoncmd="python3"
-lsof_file="${ScriptDir}/lsof_info_$(date +%F%T).txt"
+lsof_file="${ScriptDir}/lsof_info.txt"
 monitor_write_file

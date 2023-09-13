@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitors events coming from the input/output  (IO)
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=root
+ExecStart=/bin/bash /root/MP/monitors/IO/calculate_entropy.sh
+
+[Install]
+WantedBy=multi-user.target

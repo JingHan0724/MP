@@ -7,12 +7,10 @@ from re import ASCII
 import random
 import dotenv
 
- 
 def check_monitors(monitors: str):
     """
     Shuts down the systemd services, if they are still running.
-    Creates an array with the systemd services to activate for the 
-    monitoring process.
+    Creates an array with the systemd services to activate for the monitoring process.
     """
     try:
         array_monitors = monitors.split(",")
@@ -21,13 +19,13 @@ def check_monitors(monitors: str):
         return
     active_services = []
     print("Stopping Services if they are still running...")
- #   os.system("systemctl stop RES.service > /dev/null")
     os.system("systemctl stop KERN.service > /dev/null")
- #   os.system("systemctl stop SYS.service > /dev/null")
+    os.system("systemctl stop SYS.service > /dev/null")
+    os.system("systemctl stop RES.service > /dev/null")
     os.system("systemctl stop NET.service > /dev/null")
- #   os.system("systemctl stop FLSYS.service > /dev/null")
     os.system("systemctl stop BLOCK.service > /dev/null")
     os.system("systemctl stop ENTROPY.service > /dev/null")
+    
     # Get all active services for new todo:
     for monitor in array_monitors:
         if monitor == "RES":
@@ -49,7 +47,6 @@ def check_monitors(monitors: str):
             return
     return array_monitors, active_services
 
-
 def check_services(services):
     """
     Checks if the services are still running and restarts them if they are not
@@ -68,7 +65,6 @@ def thread_work(active_services: array, total: int):
     """
     check_services(active_services)
 
-    
 def start_monitor(seconds: int, active_services: array):
     total = 0
     for service in active_services:
@@ -78,27 +74,41 @@ def start_monitor(seconds: int, active_services: array):
         time.sleep(1)
         if total % 10 == 0 and total != 0:
             t1 = threading.Thread(target=thread_work, args=(active_services, total))
-            t1.start()   
+            t1.start()
         total += 1
     finish = time.perf_counter()
     actual_running_time = round(finish-start, 2)
     print("Finished montioring for {total} seconds.".format(total=actual_running_time))
     for service in active_services:
         os.system("systemctl stop {service} > /dev/null".format(service=service))
-  
 
-def monitoring(duration, monitors):
+def monitoring(duration, monitors, SYS_path):
     arr_monitors, active_services = check_monitors(monitors)
-    print("Start monitoring and running for {seconds} seconds".format(seconds=duration))
-    start_monitor(duration,active_services)
 
+    for service in active_services:
+        monitor = service.split(".")[0]
+        if monitor == "SYS":
+            if os.path.exists("/tmp/monitors"):
+                os.system("rm -rf /tmp/monitors")
+                os.system("mkdir /tmp/monitors")
+                os.system("mkdir /tmp/monitors/SYS")
+            dotenv_file = dotenv.find_dotenv()
+            dotenv.load_dotenv(dotenv_file)
+            os.environ["RSYNCF"] = "{}".format(SYS_path)
+            os.environ["SECONDS"] = "{}\seconds".format(str(duration))
+            dotenv.set_key(dotenv_file, "RSYNCF", os.environ["RSYNCF"])
+            dotenv.set_key(dotenv_file, "SECONDS", os.environ["SECONDS"])
+            os.system("cp .env /etc/systemd/system/SYS.env")
+            os.system("sudo systemctl daemon-reload")
+
+    print("Start monitoring and running for {seconds} seconds".format(seconds=duration))
+    start_monitor(duration, active_services)
 
 if __name__ == "__main__":
     # Input parameters
-    duration = input("Enter the time of monitoring in seconds(e.g., 60 seconds): ")
+    duration = input("Enter the time of monitoring in seconds (e.g., 60 seconds): ")
     monitors = input("Enter the monitoring script to use (e.g., RES): ")
+    SYS_path = input("Enter the path for SYS monitoring (e.g., roger@192.168.1.100:/home/roger/Desktop/master_project/server/SYS_data): ")
 
-    monitoring(duration, monitors)
-
-
+    monitoring(duration, monitors, SYS_path)
 

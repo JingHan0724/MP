@@ -16,6 +16,7 @@ class MonitorService():
     self.is_csv_enabled = config.get_general_config()['csvEnabled']
     self.is_rabbitMQ_enabled = config.get_general_config()['rabbitMQEnabled'] and rmqService is not None
     self.policyService = policyService
+    self.server_url = config.get_server_config()['url']
 
     if (self.is_simulation):
        self.sim_monitor = MonitorSim(simulation_file)
@@ -26,7 +27,7 @@ class MonitorService():
     if self.is_rabbitMQ_enabled:
       self.rabbitMQService = rmqService
     if self.is_csv_enabled:
-      self.csvService = CSVService(self.hw_monitor, self.perf_monitor)
+      self.csvService = CSVService(self.hw_monitor, self.perf_monitor, self.server_url)
 
   def monitor(self):
     data = { "time": int(time.time()) }

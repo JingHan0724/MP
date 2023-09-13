@@ -46,6 +46,9 @@ class ConfigService:
       return self.config[section]
     except KeyError:
       self.log.error('Malformatted config! ' + section + ' is missing')
+  
+  def get_server_config(self):
+    return self._get_config_section('server')
 
   def get_policies(self):
     return self.policies

@@ -6,6 +6,8 @@ general:
   deviceRndId: mwr9tt4
   logLevel: debug
   rabbitMQEnabled: false
+server:
+  url: http://192.168.8.11:8888/sensor/RES
 hw_events:
   cpu:
   - cpu

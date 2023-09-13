@@ -10,8 +10,8 @@ cleanup(){
 trap cleanup SIGINT
 
 #Server and port to push data
-server="http://192.168.31.185"
-port="5002"
+server="http://192.168.1.100"
+port="5004"
 directory="/sensor/"
 mac=$( cat /sys/class/net/eth0/address | tr : _ )
 

@@ -18,6 +18,8 @@ server_username="xicheng"
 server_host="192.168.8.11"
 server_path="/Users/xicheng/Desktop/data"
 
+kern_file="$server_path/kern.csv"
+
 ##############################################################
 #############	      MONITORING LOOP	        ##############
 ##############################################################
@@ -25,8 +27,10 @@ echo "Started monitoring script. . ."
 
 header=$(echo "$targetEvents" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | tr '\n' ',' | sed 's/,$//')
 
-if [ -f header_added.txt ]; then
-    rm header_added.txt
+# Check if the header exists
+if ! ssh "$server_username@$server_host" "test -e \"$kern_file\""; then
+    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
+        ssh "$server_username@$server_host" "cat > \"$kern_file\""
 fi
 
 while :
@@ -57,14 +61,6 @@ do
 	##############################################################
 	
 	# Send to server  
-	# Check if the header exists
-    if [[ ! -f header_added.txt ]]; then
-	    kern_file="$server_path/kern_$timestamp.csv"
-	    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
-	        ssh "$server_username@$server_host" "cat > \"$kern_file\""
-        touch header_added.txt
-	fi
- 
 	# Append data in the csv file
     echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
         ssh "$server_username@$server_host" "cat >> \"$kern_file\""

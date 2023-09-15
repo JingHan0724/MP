@@ -14,54 +14,43 @@ timeWindowSeconds=5
 # Total time monitored (NOT TAKING IN CONSIDERATION TIME BETWEEN SCREENSHOTS)
 timeAcumulative=0
 
-server_username="xicheng"
-server_host="192.168.8.11"
-server_path="/Users/xicheng/Desktop/data"
-
-kern_file="$server_path/kern.csv"
+server="http://192.168.8.11"
+port="5007"
+directory="/sensor"
 
 ##############################################################
 #############	      MONITORING LOOP	        ##############
 ##############################################################
 echo "Started monitoring script. . ."
 
-header=$(echo "$targetEvents" | tr ',' '\n' | sed 's/^/"/;s/$/"/' | tr '\n' ',' | sed 's/,$//')
-
-# Check if the header exists
-if ! ssh "$server_username@$server_host" "test -e \"$kern_file\""; then
-    echo "TimeAcumulative,Timestamp,Seconds,Connectivity,$header" | \
-        ssh "$server_username@$server_host" "cat > \"$kern_file\""
-fi
-
 while :
 do
-	##############################################################
-	#############		 DATA COLLECTION	        ##############
-	##############################################################
-	#	Internet connection check via ping
-	if ping -q -c 1 -W 1.5 8.8.8.8 >/dev/null; then
+    if ping -q -c 1 -W 1.5 8.8.8.8 >/dev/null; then
         connectivity="1"
-	else
-		connectivity="0"
-	fi
-	timestamp=$(($(date +%s%N)/1000000))
-	
-	# Perf will monitor the events and also act as a "sleep" between both network captures
+    else
+        connectivity="0"
+    fi
+
+    timestamp=$(($(date +%s%N)/1000000))
+
+    # Perf will monitor the events and also act as a "sleep" between both network captures
     tempOutput=$(perf stat --log-fd 1 -e "$targetEvents" -a sleep "$timeWindowSeconds")
 
-	# Data extraction from perf results
-	sample=$(echo "$tempOutput" | cut -c -20 | tr -s " " | tail -n +4 | head -n -2 | tr "\n" "," | sed 's/ //g'| sed 's/.$//')
-	seconds=$(echo "$tempOutput" | tr -s " " | cut -d " " -f 2 | tail -n 1 | tr ',' '.')
+    # Extracting data from perf results
+    sample=$(echo "$tempOutput" | cut -c -20 | tr -s " " | tail -n +4 | head -n -2 | tr "\n" "," | sed 's/ //g'| sed 's/.$//')
+    seconds=$(echo "$tempOutput" | tr -s " " | cut -d " " -f 2 | tail -n 1 | tr "," ".")
 
-	# Cumulative sum of seconds calculation
-	timeAcumulative=$(awk "BEGIN{ print $timeAcumulative + $seconds }")
-		
-	##############################################################
-	#############	           OUTPUT	            ##############
-	##############################################################
-	
-	# Send to server  
-	# Append data in the csv file
-    echo "$timeAcumulative,$timestamp,$seconds,$connectivity,$sample" | \
-        ssh "$server_username@$server_host" "cat >> \"$kern_file\""
+    # Cumulative sum of seconds calculation
+    timeAcumulative=$(awk "BEGIN{ print $timeAcumulative + $seconds }")
+
+    # Constructing the data to send
+    finalOutput="$timeAcumulative,$timestamp,$seconds,$connectivity,$sample"
+
+    # Sending data to the server
+    echo "Sending data to the server"
+    res=$(curl -sk -X POST -d "$finalOutput" -H "Content-Type: application/json" "$server:$port$directory")
+
+    echo "Data sent to server..."
+
+    sleep "$timeWindowSeconds"
 done

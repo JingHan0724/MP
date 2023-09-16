@@ -47,7 +47,7 @@ apt install python3-pip -y
 echo "Installed python3-pip"
 
 cd monitors/services
-cp RES.service KERN.service SYS.service SYS.env NET.service BLOCK.service ENTROPY.service /etc/systemd/system/
+cp RES.service KERN.service SYS.service SYS.env NET.service BLOCK.service ENTROPY.service FLSYS.service /etc/systemd/system/
 systemctl daemon-reload
 echo "Services copied to /etc/systemd/system/"
 echo "Services reloaded"
@@ -80,7 +80,7 @@ cd NET
 python3 -m venv env
 source env/bin/activate
 pip3 install scapy
-pip3 install cryptography
+pip3.7 install cryptography
 pip3 install requests
 deactivate
 echo "Depencencies installed"
@@ -93,6 +93,12 @@ chmod +x block_monitor.sh
 chmod +x calculate_entropy.sh
 echo "Depencencies installed"
 
+# FLSYS Monitor
+echo "Installing dependencies for the FLSYS Monitor"
+cd ..
+cd FLSYS
+chmod +x file_system_monitor.sh
+echo "Depencencies installed"
 
 # Installs the python-venv for the for the middleware:
 echo "Installing the dependencies for the Monitor Controller"

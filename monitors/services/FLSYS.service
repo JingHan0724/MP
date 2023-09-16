@@ -6,7 +6,7 @@ After=multi-user.target
 Type=simple
 Restart=on-failure
 User=root
-ExecStart=/bin/bash /root/MP/monitors/FLSYS/monitorfilesystem.sh
+ExecStart=/bin/bash /root/MP/monitors/FLSYS/file_system_monitor.sh
 
 [Install]
 WantedBy=multi-user.target

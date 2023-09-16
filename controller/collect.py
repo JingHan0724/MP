@@ -25,6 +25,7 @@ def check_monitors(monitors: str):
     os.system("systemctl stop NET.service > /dev/null")
     os.system("systemctl stop BLOCK.service > /dev/null")
     os.system("systemctl stop ENTROPY.service > /dev/null")
+    os.system("systemctl stop FLSYS.service > /dev/null")
     
     # Get all active services for new todo:
     for monitor in array_monitors:
@@ -107,7 +108,7 @@ def monitoring(duration, monitors, SYS_path):
 if __name__ == "__main__":
     # Input parameters
     duration = input("Enter the time of monitoring in seconds (e.g., 60 seconds): ")
-    monitors = input("Enter the monitoring script to use (e.g., RES): ")
+    monitors = input("Enter the monitoring script to use (e.g., RES,NET,SYS,KERN,FLSYS,BLOCK,ENTROPY): ")
     SYS_path = input("Enter the path for SYS monitoring (e.g., roger@192.168.1.100:/home/roger/Desktop/master_project/server/SYS_data): ")
 
     monitoring(duration, monitors, SYS_path)

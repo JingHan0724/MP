@@ -49,8 +49,4 @@ do
     # Sending data to the server
     echo "Sending data to the server"
     res=$(curl -sk -X POST -d "$finalOutput" -H "Content-Type: application/json" "$server:$port$directory")
-
-    echo "Data sent to server..."
-
-    sleep "$timeWindowSeconds"
 done

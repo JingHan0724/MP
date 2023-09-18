@@ -35,7 +35,7 @@ EOF
 
 monitor_write_file(){
   while true; do
-    title="========== Monitoring Round timestamp: $(($(date +%s%N)/1000000)) =========="
+    title="========== Monitoring Round Timestamp: $(($(date +%s%N)/1000000)) =========="
     res=$(curl -sk -X POST -d "$title" -H "Content-Type: application/json" "$server:$port$directory$mac")	    
     lsof >${lsof_file}
     mkdir -p ${ScriptDir}/tmp

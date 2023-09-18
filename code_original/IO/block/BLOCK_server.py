@@ -16,7 +16,7 @@ app = Flask(__name__)
 api = Api(app)
 data_directory = str(os.getcwd()) + bar + "block_data"
 
-fieldnames = ["datetime", "device", "read_ops", "write_ops", "read_kbs", "write_kbs", "avgrq_sz", "avg_queue", "await", "r_await", "w_await", "svctm", "util"]
+fieldnames = ["timestamp", "read_ops", "write_ops", "read_kbs", "write_kbs", "avgrq_sz", "avg_queue", "await", "r_await", "w_await", "svctm", "util"]
 
 class sensor(Resource):
 

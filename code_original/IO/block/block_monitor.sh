@@ -12,11 +12,10 @@ mac=$( cat /sys/class/net/eth0/address | tr : _ )
 # Main monitoring loop
 while true; do
     # Display date and time
-    current_datetime=$(date +"%Y-%m-%d %H:%M:%S")
+    timestamp=$(($(date +%s%N)/1000000))
 
     # Display I/O statistics using iostat
     iostat_output=$(iostat -d -x 10 2 | grep '[0-9]' | tail -n 1) # the name of the block device
-    device=$(echo "$iostat_output" | awk '{print $1}')
     read_ops=$(echo "$iostat_output" | awk '{print $4}') # number of read I/O operations per second
     write_ops=$(echo "$iostat_output" | awk '{print $5}') # number of write I/O operations per second
     read_kbs=$(echo "$iostat_output" | awk '{print $6}') # kilobytes read per second
@@ -33,7 +32,7 @@ while true; do
     # disk_utilization=$(df -h | grep "/dev/$device" | awk '{print $5}' | sed 's/%//')
 	
     #PUSH to server	
-    finalOutput="$current_datetime,$device,$read_ops,$write_ops,$read_kbs,$write_kbs,$avgrq_sz,$avg_queue,$await,$r_await,$w_await,$svctm,$util"
+    finalOutput="$timestamp,$read_ops,$write_ops,$read_kbs,$write_kbs,$avgrq_sz,$avg_queue,$await,$r_await,$w_await,$svctm,$util"
     res=$(curl -sk -X POST -d "$finalOutput" -H "Content-Type: text/csv" "$server:$port$directory$mac")
 
     # Sleep for a while before the next iteration

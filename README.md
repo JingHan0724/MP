@@ -19,25 +19,30 @@ You will need to enable SSH on your main machine:
 `sudo systemctl enable ssh`
 `sudo systemctl start ssh`
 # Malware samples:
-* Malware samples used: 
-* Botnet: Bashlite
-* Backdoor: HttpBackdoor, Backdoor, The Tick
-* Ransomware: Ransomware‐PoC
-* Cryptojacker: Linux.MulDrop.14
-* Rootkits: Beurk, Bdvl
+Botnet: Bashlite; Backdoor: HttpBackdoor, Backdoor, The Tick; Ransomware: Ransomware‐PoC; Cryptojacker: Linux.MulDrop.14; Rootkits: Beurk, Bdvl
+
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:
 `apt-get git`
+
 `git clone https://github.com/JingHan0724/MP.git`
+
 `cd MP`
+
 `chmod +x install_source.sh`
+
 `./install_source.sh -s username@desktopipaddress`
 # Collecting data:
 (1) Server Side Configuration:
+
 Adjust the listening scripts to utilize your specific IP address and designate a data directory of your choice.
+
 Execute the data transmission scripts on the server side, which is typically your personal computer.
+
 (2) Client Side Data Collection (Raspberry Pi):
 `cd controller`
+
 `source env/bin/activate`
+
 `ython3 collect.py`
 

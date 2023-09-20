@@ -15,9 +15,13 @@ Creation of New Datasets for Decentralized Federated Learning
 * FLSYS: Monitors events coming from the file system (5 seconds time window)
 # Prerequisite:
 You will need to enable SSH on your main machine:
+
 `sudo apt-get install openssh-server`
+
 `sudo systemctl enable ssh`
+
 `sudo systemctl start ssh`
+
 # Malware samples:
 * Botnet: Bashlite
 * Backdoor: HttpBackdoor, Backdoor, The Tick
@@ -27,6 +31,7 @@ You will need to enable SSH on your main machine:
 
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:
+
 `apt-get git`
 
 `git clone https://github.com/JingHan0724/MP.git`
@@ -36,17 +41,17 @@ See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guid
 `chmod +x install_source.sh`
 
 `./install_source.sh -s username@desktopipaddress`
+
 # Collecting data:
-(1) Server Side Configuration:
+(1) Server side (your personal computer):
 
-Adjust the listening scripts to utilize your specific IP address and designate a data directory of your choice.
+Adjust the listening scripts to utilize your specific IP address and designate a data directory of your choice. Then execute the data transmission scripts.
 
-Execute the data transmission scripts on the server side, which is typically your personal computer.
+(2) Client side (Raspberry Pi):
 
-(2) Client Side Data Collection (Raspberry Pi):
 `cd controller`
 
 `source env/bin/activate`
 
-`ython3 collect.py`
+`python3 collect.py`
 

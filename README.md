@@ -3,7 +3,7 @@ Creation of New Datasets for Decentralized Federated Learning
 # File structure
 * /controller: Directory containing the control script to run monitoring scripts
 * /monitors: Directory containing the monitoring scripts (RES, KERN, SYS, NET, FLSYS, IO)
-* /monitors: Directory containing the listeners for data transmission (run on the server side)
+* /server: Directory containing the listeners for data transmission (run on the server side)
 * install_source.sh: File to install all needed dependencies
 # Differences between the monitors:
 * KERN: Monitors HPC and Ressource usage -> Provided by Dr.Huertas and Dr.Feng (5 seconds time window)
@@ -19,7 +19,11 @@ You will need to enable SSH on your main machine:
 `sudo systemctl enable ssh`
 `sudo systemctl start ssh`
 # Malware samples:
-Botnet: Bashlite; Backdoor: HttpBackdoor, Backdoor, The Tick; Ransomware: Ransomware‐PoC; Cryptojacker: Linux.MulDrop.14; Rootkits: Beurk, Bdvl
+* Botnet: Bashlite
+* Backdoor: HttpBackdoor, Backdoor, The Tick
+* Ransomware: Ransomware‐PoC
+* Cryptojacker: Linux.MulDrop.14
+* Rootkits: Beurk, Bdvl
 
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:

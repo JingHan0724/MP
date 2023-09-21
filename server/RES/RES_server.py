@@ -2,10 +2,18 @@ from flask import Flask, request
 import csv
 import os
 import time
+import platform
 
 app = Flask(__name__)
 
-save_path = "/Users/xicheng/Desktop/data"
+bar = ''
+if platform.system() == "Linux" or platform.system() == "Darwin":
+    bar = "/"
+elif platform.system() == "Windows":
+    bar = '\\'
+
+save_path = str(os.getcwd()) + bar + "RES"
+
 csv_filename = None
 
 @app.route('/sensor/RES', methods=['POST'])

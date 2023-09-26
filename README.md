@@ -9,7 +9,7 @@ Creation of New Datasets for Decentralized Federated Learning
 * KERN: Monitors HPC and Ressource usage -> Provided by Dr.Huertas and Dr.Feng (5 seconds time window)
 * RES: Also monitors HPC & Ressource usage -> Provided by Dr.Huertas and Dr.Feng (5 seconds time window)
 * SYS: Monitors Systemcalls -> Provided by Dr.Huertas and Dr.Feng (10 seconds time window)
-* NET: Monitors events coming from the network (10 seconds time window)
+* NET: Monitors events coming from the network (5 seconds time window)
 * IO_block: Monitors events coming from the input/output (10 seconds time window)
 * IO_entropy: Calculate the entropy from the input/output (10 seconds time window)
 * FLSYS: Monitors events coming from the file system (5 seconds time window)

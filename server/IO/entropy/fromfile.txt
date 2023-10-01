@@ -5,9 +5,8 @@
 @/sys
 @/usr
 @/lib
-@/et
+@/etc
 @/bin
 @/sbin
-@/root/aaaa
 @/root/MP
 @/root/malwares

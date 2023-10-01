@@ -45,11 +45,10 @@ monitor_write_file(){
       head -c ${header_byte} "${file_path}" >${tmp_path}       
       caculate_entropy
 		
-      finalOutput="[$timestamp] $file_path | $action | entropy: $(echo ${entropy}|awk  '{printf "%.6f\n", $0}')"
+      #finalOutput="[$timestamp] $file_path | $action | entropy: $(echo ${entropy}|awk  '{printf "%.6f\n", $0}')"
       num="$(echo ${entropy} | awk '{printf "%.6f", $0}')"
-      #echo $num
       final="$timestamp,$file_path,$action,$num"
-      echo $finalOutput
+      #echo $finalOutput
       res=$(curl -sk -X POST -d "$final" -H "Content-Type: application/json" "$server:$port$directory$mac")
     fi
   done

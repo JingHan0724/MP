@@ -1,0 +1,13 @@
+@/run
+@/var
+@/dev
+@/tmp
+@/sys
+@/usr
+@/lib
+@/et
+@/bin
+@/sbin
+@/root/aaaa
+@/root/MP
+@/root/malwares

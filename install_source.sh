@@ -89,6 +89,8 @@ echo "Depencencies installed"
 echo "Installing dependencies for the BLOCK and ENTROPY Monitor"
 cd ..
 cd IO
+sudo apt-get install inotify-tools
+sudo sysctl fs.inotify.max_user_watches=65536
 chmod +x block_monitor.sh
 chmod +x calculate_entropy.sh
 echo "Depencencies installed"

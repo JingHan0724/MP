@@ -32,7 +32,7 @@ You will need to enable SSH on your main machine:
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:
 
-`apt-get git`
+`sudo apt install git`
 
 `git clone https://github.com/JingHan0724/MP.git`
 

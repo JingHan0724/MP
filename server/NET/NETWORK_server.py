@@ -1,9 +1,13 @@
 import time
+import threading
 from flask import Flask, request
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
 import os
 import platform
+from ssl import SSLEOFError
+from gevent.pywsgi import WSGIServer
+import traceback
 
 bar = ''
 if platform.system() == "Linux":
@@ -17,41 +21,57 @@ data_directory = str(os.getcwd()) + bar + "device1/Bashlite/network_data"
 
 header = "Time,Protocol,SourceIP,SourcePort,DestIP,DestPort,Length\n"
 
+
 class sensor(Resource):
 
     def post(self, sensorid):
         vector = request.data.decode("utf-8")
-        #vector = vector[:-1]
-        vector = vector + "\n"
-        file_path = data_directory + bar + "net.csv"
-        append_write = 'a'  # append if already exists
+        vector += "\n"
+        file_path = os.path.join(data_directory, "net.csv")
+        append_write = 'a'
 
-        while True:
-            try:
-                if not os.path.exists(file_path):
-                    file = open(file_path, append_write)
-                    file.write(header)
-                    file.close()
-                
-                file = open(file_path, append_write)
-                file.write(vector)
-                file.close()
-                break  # Break the loop if data is written successfully
-            except ConnectionResetError as e:
-                # Handle the connection reset error here
-                print(f"Connection reset error: {e}")
-                # Implement a reconnection strategy here (e.g., wait and retry)
-                time.sleep(1)  # Wait for 1 second before retrying
+        with open(file_path, append_write) as file:
+            if os.path.getsize(file_path) == 0:  # Check if file is empty
+                file.write(header)
+            file.write(vector)
 
         return 200
+        
+        
+        
+class CustomWSGIServer(WSGIServer):
+
+    def handle_error(self, type, value, tb):
+        # Print the error
+        traceback.print_exception(type, value, tb)
+        # Restart the server (by raising the exception further)
+        raise value
+
+
+def force_restart():
+    """Thread routine to trigger a server restart every 60 seconds."""
+    while True:
+        time.sleep(60)
+        raise Exception("Scheduled restart after 1 minute.")
+
 
 def launch_REST_Server():
+
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
 
     api.add_resource(sensor, '/sensor/<sensorid>')  # Route_1
-    http_server = WSGIServer(('0.0.0.0', 5002), app, certfile="tls.crt", keyfile="tls.key")
-    http_server.serve_forever()
+
+    # Start the force_restart thread
+    threading.Thread(target=force_restart).start()
+
+    while True:  # This will ensure the server tries to restart upon an exception
+        try:
+            http_server = CustomWSGIServer(('0.0.0.0', 5002), app, certfile="tls.crt", keyfile="tls.key")
+            http_server.serve_forever()
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}. Restarting server...")
+            time.sleep(5)  # Give it a 5-second delay before restarting
 
 if __name__ == "__main__":
     launch_REST_Server()

@@ -22,6 +22,10 @@ You will need to enable SSH on your main machine:
 
 `sudo systemctl start ssh`
 
+`pip3 install scapy, requests`
+
+`sudo apt-get install sysstat`
+
 # Malware samples:
 * Botnet: Bashlite
 * Backdoor: HttpBackdoor, Backdoor, The Tick

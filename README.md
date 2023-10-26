@@ -24,7 +24,13 @@ You will need to enable SSH on your main machine:
 
 You will need to install the following packages on your raspberry pi:
 
-`pip3 install scapy, requests`
+1) network monitoring and data transmission:
+
+`pip3 install scapy` 
+
+`pip3 install requests`
+
+2) IO monitoring:
 
 `sudo apt-get install sysstat`
 
@@ -37,8 +43,7 @@ You will need to install the following packages on your raspberry pi:
 
 See the wike page (https://github.com/JingHan0724/MP/wiki) for installation guidance.
 # Installation:
-
-`sudo apt install git`
+`sudo apt-get install git`
 
 `git clone https://github.com/JingHan0724/MP.git`
 

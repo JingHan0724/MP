@@ -22,6 +22,8 @@ You will need to enable SSH on your main machine:
 
 `sudo systemctl start ssh`
 
+You will need to install the following packages on your raspberry pi:
+
 `pip3 install scapy, requests`
 
 `sudo apt-get install sysstat`

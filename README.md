@@ -60,6 +60,8 @@ Adjust the listening scripts to utilize your specific IP address and designate a
 
 (2) Client side (Raspberry Pi):
 
+Adjust the monitoring scripts to utilize your server IP address and ports. Then execute the control script:
+
 `cd controller`
 
 `source env/bin/activate`

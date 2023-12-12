@@ -19,7 +19,7 @@ while true; do
     read_ops=$(echo "$iostat_output" | awk '{print $4}') # number of read I/O operations per second
     write_ops=$(echo "$iostat_output" | awk '{print $5}') # number of write I/O operations per second
     read_kbs=$(echo "$iostat_output" | awk '{print $6}') # kilobytes read per second
-    write_kbs=$(echo "$iostat_output" | awk '{print $7}') # kilobytes read per second
+    write_kbs=$(echo "$iostat_output" | awk '{print $7}') # kilobytes written per second
     avgrq_sz=$(echo "$iostat_output" | awk '{print $8}') # average size (in sectors) of the requests sent to the device
     avg_queue=$(echo "$iostat_output" | awk '{print $9}') # average queue length (number of requests waiting for service)
     await=$(echo "$iostat_output" | awk '{print $10}') # average time (in milliseconds) for I/O requests to be serviced (including queue time)
